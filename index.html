@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Narodowy Bank Japuszkowy</title>
+  <link rel="icon" href="logo.png" />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ffd54a;--muted:#9aa4b2;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Helvetica,Arial}
+    body{margin:0;background:linear-gradient(180deg,#071028 0%,#071825 100%);color:#e6eef6}
+    header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+    header img.logo{width:40px;height:40px;border-radius:8px}
+    header h1{font-size:18px;margin:0}
+    .container{max-width:1100px;margin:28px auto;padding:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 6px 20px rgba(2,6,23,.6)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+    .center{grid-column:1/2}
+    .side{grid-column:2/3}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.05);background:var(--glass);color:inherit}
+    .btn{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+    .muted{color:var(--muted)}
+    .hidden{display:none}
+    .flex{display:flex;gap:10px;align-items:center}
+    .item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));margin-bottom:8px}
+    .small{font-size:13px}
+    .tx{font-size:13px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px}
+    footer{padding:16px;text-align:center;color:var(--muted)}
+    .login-wrap{max-width:420px;margin:40px auto}
+    .notice{font-size:13px;color:var(--muted);margin-top:8px}
+    .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:600}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.side{grid-column:1}}
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="logo" class="logo" />
+    <h1>Narodowy Bank Japuszkowy</h1>
+  <nav style="background:var(--card);padding:8px 20px;display:flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.4)"><div style="max-width:1100px;margin:0 auto;display:flex;gap:8px;align-items:center;width:100%"><a href="#" class="btn-tab" data-target="dashboard" style="padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit;font-weight:700">Panel</a><a href="#" class="btn-tab" data-target="transactions" style="padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit">Historia</a><a href="#" class="btn-tab" data-target="collectiblesTab" style="padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit">Japuszki</a><a href="#" class="btn-tab" data-target="topup" style="padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit">Doładowania</a><a href="#" class="btn-tab" data-target="settings" style="padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit">Ustawienia</a><a href="#" class="btn-tab" data-target="support" style="margin-left:auto;padding:8px 12px;border-radius:8px;text-decoration:none;color:inherit">Pomoc</a></div></nav>
+</header>
+
+  <main class="container" id="app">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="card login-wrap">
+      <h2>Zaloguj się do Narodowego Banku Japuszkowego</h2>
+      <p class="muted">Podaj swój login i hasło.</p>
+      <div style="margin-top:12px">
+        <label>Login</label>
+        <input id="loginUsername" placeholder="np. xxsshadowsxx" />
+      </div>
+      <div style="margin-top:12px">
+        <label>Hasło</label>
+        <input id="loginPassword" type="password" placeholder="hasło" />
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" id="loginBtn">Zaloguj</button>
+        <button id="fillBtn">Wypełnij próbkę</button>
+      </div>
+      <p class="notice">(Uwaga: strona działa lokalnie i nie łączy się z prawdziwymi systemami płatności.)</p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small muted">Zalogowany jako</div>
+            <div style="font-weight:700;font-size:18px" id="userDisplay">—</div>
+            <div class="muted small" id="accountIdDisplay">ID konta: —</div>
+          </div>
+          <div style="text-align:right">
+            <div class="muted small">Saldo</div>
+            <div style="font-weight:800;font-size:20px" id="balanceDisplay">0 JPC</div>
+            <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn" id="logoutBtn">Wyloguj</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="center">
+
+          <!-- Kot Pik (Generator) -->
+          <div class="card">
+            <h3>Kot Pik — generator (BLIK / 6 liczb)</h3>
+            <p class="muted">Generuj szybko kod BLIK lub zestaw 6 losowych liczb.</p>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="genBlikBtn">Generuj kod BLIK (6 cyfr)</button>
+              <button id="gen6Btn">6 losowych liczb</button>
+            </div>
+            <div id="kotResult" style="margin-top:12px;font-size:20px;font-weight:700"></div>
+            <div style="margin-top:8px">
+              <button id="copyBtn">Kopiuj</button>
+            </div>
+          </div>
+
+          <!-- Przelewy -->
+          <div class="card">
+            <h3>Przelew na inny numer konta</h3>
+            <label>Numer konta odbiorcy</label>
+            <input id="toAccount" placeholder="np. 1234-5678-90" />
+            <label style="margin-top:8px">Kwota (JPC)</label>
+            <input id="transferAmount" type="number" min="0" step="0.01" placeholder="np. 10.00" />
+            <label style="margin-top:8px">Tytuł</label>
+            <input id="transferTitle" placeholder="np. Prezent" />
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button class="btn" id="sendTransferBtn">Wyślij przelew</button>
+              <button id="generateQRBtn">Wygeneruj link płatności</button>
+            </div>
+            <div id="transferMsg" class="muted small" style="margin-top:8px"></div>
+          </div>
+
+          <!-- Doładowanie Miaufon -->
+          <div class="card">
+            <h3>Doładowanie Miaufon</h3>
+            <label>Numer telefonu</label>
+            <input id="phoneNumber" placeholder="np. 600-700-800" />
+            <label style="margin-top:8px">Operator</label>
+            <select id="phoneOperator">
+              <option>Miaufon Standard</option>
+              <option>Japush Mobile</option>
+              <option>FrytNet</option>
+            </select>
+            <label style="margin-top:8px">Kwota (JPC)</label>
+            <input id="phoneAmount" type="number" min="1" step="1" value="20" />
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button class="btn" id="topupBtn">Doładuj</button>
+              <button id="fakeReceiptBtn">Wydrukuj potwierdzenie</button>
+            </div>
+            <div id="topupMsg" class="muted small" style="margin-top:8px"></div>
+          </div>
+
+          <!-- Inne funkcje bankowe -->
+          <div class="card">
+            <h3>Funkcje bankowe</h3>
+            <div class="item">
+              <div>
+                <div style="font-weight:700">Historia transakcji</div>
+                <div class="small muted">Przeglądaj i eksportuj</div>
+              </div>
+              <div><button id="exportCsvBtn">Eksportuj CSV</button></div>
+            </div>
+            <div class="item">
+              <div>
+                <div style="font-weight:700">Karta wirtualna</div>
+                <div class="small muted">Wygeneruj jednorazowe dane karty</div>
+              </div>
+              <div><button id="genCardBtn">Wygeneruj</button></div>
+            </div>
+            <div class="item">
+              <div>
+                <div style="font-weight:700">Kalkulator kredytowy</div>
+                <div class="small muted">Szybki podgląd rat</div>
+              </div>
+              <div><button id="loanCalcBtn">Otwórz</button></div>
+            </div>
+          </div>
+
+          <!-- Transakcje -->
+          <div class="card">
+            <h3>Ostatnie transakcje</h3>
+            <div id="txList">
+              <!-- txs -->
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="side">
+          <div class="card">
+            <h3>Twoje Japuszki</h3>
+            <div id="collectibles">
+              <!-- items -->
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Ustawienia konta</h3>
+            <label>Hasło — zmień</label>
+            <input id="newPassword" type="password" placeholder="Nowe hasło" />
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button id="changePassBtn">Zmień hasło</button>
+            </div>
+            <div style="margin-top:12px">
+              <label class="small muted">Pobierz wyciąg</label>
+              <button id="downloadStatementBtn">Pobierz PDF (symulacja)</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Informacje</h3>
+            <div class="small muted">Kontakt: pomoc@nbjapuszkowy.local</div>
+            <div class="small muted">Telefon: 22 777 77 77</div>
+            <div style="margin-top:8px"><span class="chip">Bezpieczne logowanie</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <footer>
+        &copy; Narodowy Bank Japuszkowy — miły bank dla kotów i ludzi
+      </footer>
+    </div>
+
+  </main>
+
+  <script>
+    // --- DANE UŻYTKOWNIKA (zaszyte lokalnie) ---
+    const DB = {
+      users: [
+        {
+          username: 'xxsshadowsxx',
+          password: 'jajobajo',
+          accountId: 'NBJ-0001',
+          balance: 250.00,
+          collectibles: [
+            { id: 1, name: 'Zwykłe Japuszko', type: 'zwykly' },
+            { id: 'L-1', name: 'Limitowane Frytuszko', type: 'limitowane' }
+          ],
+          tx: [
+            {id:1,date:new Date().toLocaleString(),type:'info',title:'Utworzenie konta',amount:0}
+          ]
+        }
+      ]
+    }
+
+    // --- ELEMENTY DOM ---
+    const loginScreen = document.getElementById('loginScreen')
+    const dashboard = document.getElementById('dashboard')
+    const loginBtn = document.getElementById('loginBtn')
+    const fillBtn = document.getElementById('fillBtn')
+    const logoutBtn = document.getElementById('logoutBtn')
+    const userDisplay = document.getElementById('userDisplay')
+    const balanceDisplay = document.getElementById('balanceDisplay')
+    const accountIdDisplay = document.getElementById('accountIdDisplay')
+    const collectiblesDiv = document.getElementById('collectibles')
+    const txList = document.getElementById('txList')
+
+    let currentUser = null
+
+    function findUser(username){
+      return DB.users.find(u => u.username === username)
+    }
+
+    // --- LOGIN ---
+    loginBtn.addEventListener('click', ()=>{
+      const u = document.getElementById('loginUsername').value.trim()
+      const p = document.getElementById('loginPassword').value
+      const user = findUser(u)
+      if(!user || user.password !== p){
+        alert('Nieprawidłowy login lub hasło')
+        return
+      }
+      currentUser = user
+      showDashboard()
+    })
+
+    // sample fill button (for convenience)
+    fillBtn.addEventListener('click', ()=>{
+      document.getElementById('loginUsername').value = 'xxsshadowsxx'
+      document.getElementById('loginPassword').value = 'jajobajo'
+    })
+
+    logoutBtn.addEventListener('click', ()=>{
+      currentUser = null
+      dashboard.classList.add('hidden')
+      loginScreen.classList.remove('hidden')
+      document.getElementById('loginPassword').value = ''
+    })
+
+    function showDashboard(){
+      loginScreen.classList.add('hidden')
+      dashboard.classList.remove('hidden')
+      userDisplay.textContent = currentUser.username
+      balanceDisplay.textContent = currentUser.balance.toFixed(2) + ' JPC'
+      accountIdDisplay.textContent = 'ID konta: ' + currentUser.accountId
+      renderCollectibles()
+      renderTx()
+    }
+
+    // --- KOT PIK (generator) ---
+    const kotResult = document.getElementById('kotResult')
+    document.getElementById('genBlikBtn').addEventListener('click', ()=>{
+      const code = Array.from({length:6}, ()=>Math.floor(Math.random()*10)).join('')
+      kotResult.textContent = code
+      kotResult.dataset.value = code
+    })
+    document.getElementById('gen6Btn').addEventListener('click', ()=>{
+      const nums = new Set()
+      while(nums.size < 6) nums.add(Math.floor(Math.random()*49)+1)
+      const arr = Array.from(nums).sort((a,b)=>a-b).join(', ')
+      kotResult.textContent = arr
+      kotResult.dataset.value = arr
+    })
+    document.getElementById('copyBtn').addEventListener('click', ()=>{
+      const v = kotResult.dataset.value
+      if(!v){alert('Najpierw wygeneruj kod!');return}
+      navigator.clipboard?.writeText(v).then(()=>alert('Skopiowano: '+v)).catch(()=>alert('Kopiowanie nie powiodło się'))
+    })
+
+    // --- PRZELEW ---
+    document.getElementById('sendTransferBtn').addEventListener('click', ()=>{
+      const to = document.getElementById('toAccount').value.trim()
+      const amount = parseFloat(document.getElementById('transferAmount').value)
+      const title = document.getElementById('transferTitle').value.trim() || 'Przelew'
+      const msg = document.getElementById('transferMsg')
+      if(!to || !amount || amount <= 0){msg.textContent='Wprowadź poprawny numer i kwotę';return}
+      if(amount > currentUser.balance){msg.textContent='Niewystarczające środki';return}
+      currentUser.balance -= amount
+      const tx = {id:Date.now(),date:new Date().toLocaleString(),type:'out',title:`Przelew: ${title} -> ${to}`,amount:-amount}
+      currentUser.tx.unshift(tx)
+      balanceDisplay.textContent = currentUser.balance.toFixed(2) + ' JPC'
+      msg.textContent = 'Przelew zrealizowany pomyślnie.'
+      renderTx()
+    })
+
+    document.getElementById('generateQRBtn').addEventListener('click', ()=>{
+      const to = document.getElementById('toAccount').value.trim() || 'NBJ-XXXX'
+      const amount = parseFloat(document.getElementById('transferAmount').value) || 0
+      const payload = `NBJ|to:${to}|amount:${amount}|ts:${Date.now()}`
+      const url = 'nbjpay:' + btoa(payload)
+      prompt('Link płatności (skopiuj):', url)
+    })
+
+    // --- DOŁADOWANIE MIAUFON ---
+    document.getElementById('topupBtn').addEventListener('click', ()=>{
+      const num = document.getElementById('phoneNumber').value.trim()
+      const op = document.getElementById('phoneOperator').value
+      const amount = parseFloat(document.getElementById('phoneAmount').value)
+      const msg = document.getElementById('topupMsg')
+      if(!num || !amount || amount <= 0){msg.textContent='Wprowadź poprawne dane';return}
+      if(amount > currentUser.balance){msg.textContent='Niewystarczające środki';return}
+      currentUser.balance -= amount
+      const tx = {id:Date.now(),date:new Date().toLocaleString(),type:'out',title:`Doładowanie ${op} ${num}`,amount:-amount}
+      currentUser.tx.unshift(tx)
+      balanceDisplay.textContent = currentUser.balance.toFixed(2) + ' JPC'
+      msg.textContent = 'Doładowanie wykonane pomyślnie.'
+      renderTx()
+    })
+
+    document.getElementById('fakeReceiptBtn').addEventListener('click', ()=>{
+      const w = window.open('','potwierdzenie','width=420,height=600')
+      const html = `<html><head><title>Potwierdzenie</title></head><body style="font-family:Arial;color:#222;padding:20px"><h2>Potwierdzenie doładowania</h2><p>Data: ${new Date().toLocaleString()}</p><p>Operator: ${document.getElementById('phoneOperator').value}</p><p>Numer: ${document.getElementById('phoneNumber').value}</p><p>Kwota: ${document.getElementById('phoneAmount').value} JPC</p><p>Dziękujemy za skorzystanie z Miaufon.</p></body></html>`
+      w.document.write(html);w.document.close()
+    })
+
+    // --- COLLECTIBLES RENDER ---
+    function renderCollectibles(){
+      collectiblesDiv.innerHTML = ''
+      currentUser.collectibles.forEach(c=>{
+        const el = document.createElement('div')
+        el.className = 'item'
+        el.innerHTML = `<div><div style="font-weight:700">${c.name}</div><div class="small muted">${c.type}</div></div><div><button class="small" onclick='transferCollectible("${c.id}")'>Przekaż</button></div>`
+        collectiblesDiv.appendChild(el)
+      })
+    }
+
+    window.transferCollectible = function(id){
+      const to = prompt('Podaj numer konta odbiorcy')
+      if(!to) return
+      const idx = currentUser.collectibles.findIndex(x=>String(x.id)===String(id))
+      if(idx===-1) return alert('Nie znaleziono przedmiotu')
+      const item = currentUser.collectibles.splice(idx,1)[0]
+      currentUser.tx.unshift({id:Date.now(),date:new Date().toLocaleString(),type:'out',title:`Przekazano ${item.name} -> ${to}`,amount:0})
+      renderCollectibles();renderTx();alert('Przedmiot przekazany')
+    }
+
+    // --- TRANSACTIONS ---
+    function renderTx(){
+      txList.innerHTML = ''
+      currentUser.tx.slice(0,20).forEach(t=>{
+        const d = document.createElement('div')
+        d.className = 'tx'
+        d.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${t.title}</strong><div class="small muted">${t.date}</div></div><div style="text-align:right"><div>${t.amount? (t.amount>0?'+':'')+t.amount.toFixed(2)+' JPC':''}</div></div></div>`
+        txList.appendChild(d)
+      })
+    }
+
+    // --- EXPORT CSV ---
+    document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
+      const rows = [['date,title,amount']]
+      const csv = currentUser.tx.map(t=>`"${t.date}","${t.title}","${t.amount || 0}"`).join('\n')
+      const blob = new Blob([csv],{type:'text/csv'})
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a');a.href=url;a.download='wyciag_nbj.csv';a.click();URL.revokeObjectURL(url)
+    })
+
+    // --- GENERATE VIRTUAL CARD ---
+    document.getElementById('genCardBtn').addEventListener('click', ()=>{
+      const number = Array.from({length:16},()=>Math.floor(Math.random()*10)).join('')
+      const cvv = Math.floor(Math.random()*900)+100
+      const exp = `${String(Math.floor(Math.random()*12)+1).padStart(2,'0')}/${String(Math.floor(Math.random()*5)+24)}`
+      alert(`Dane karty\nNr: ${number}\nEXP: ${exp}\nCVV: ${cvv}`)
+    })
+
+    // --- KALKULATOR KREDYTOWY ---
+    document.getElementById('loanCalcBtn').addEventListener('click', ()=>{
+      const sum = parseFloat(prompt('Kwota kredytu (JPC)',1000))||0
+      const years = parseInt(prompt('Ile lat?',1))||1
+      const rate = 6.5/100
+      const months = years*12
+      const monthly = (sum * (rate/12)) / (1 - Math.pow(1+rate/12, -months))
+      alert(`Orientacyjna rata miesięczna: ${monthly.toFixed(2)} JPC przez ${months} miesięcy`)
+    })
+
+    // --- ZMIANA HASŁA ---
+    document.getElementById('changePassBtn').addEventListener('click', ()=>{
+      const npw = document.getElementById('newPassword').value
+      if(!npw){alert('Wprowadź nowe hasło');return}
+      currentUser.password = npw
+      alert('Hasło zmienione pomyślnie')
+      document.getElementById('newPassword').value = ''
+    })
+
+    // --- POBIERANIE WYCIĄGU (prosta symulacja) ---
+    document.getElementById('downloadStatementBtn').addEventListener('click', ()=>{
+      const lines = ['Data;Tytuł;Kwota']
+      currentUser.tx.forEach(t=>lines.push(`${t.date};${t.title};${t.amount||0}`))
+      const blob = new Blob([lines.join('\n')],{type:'text/csv'})
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a');a.href=url;a.download='wyciag_nbj.csv';a.click();URL.revokeObjectURL(url)
+    })
+
+    // --- INITIALIZATION: auto-fill login to speed up testing (but not auto-login) ---
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('loginUsername').value = ''
+    })
+
+  </script>
+<script>
+// --- NAV / TAB HANDLER (dodane automatycznie) ---
+(function(){
+  const tabs = document.querySelectorAll('.btn-tab');
+  if(!tabs || !tabs.length) return;
+
+  function clearStyles(){
+    tabs.forEach(t=>{t.style.background=''; t.style.color='inherit'});
+  }
+
+  const targetMap = {
+    dashboard: '#dashboard',
+    transactions: '#txList',
+    collectiblesTab: '#collectibles',
+    topup: '#phoneNumber',
+    settings: '.side .card:nth-child(2)',
+    support: null
+  };
+
+  tabs.forEach(t=>{
+    t.addEventListener('click', e=>{
+      e.preventDefault();
+      clearStyles();
+      t.style.background = 'var(--accent)';
+      t.style.color = '#0b1220';
+      const key = t.dataset.target;
+      const sel = targetMap[key];
+      if(sel){
+        const el = document.querySelector(sel);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      } else {
+        // fallback: scroll to top of app
+        const app = document.getElementById('app'); if(app) app.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+
+  // set default active
+  const def = document.querySelector('.btn-tab[data-target="dashboard"]');
+  if(def){ clearStyles(); def.style.background='var(--accent)'; def.style.color='#0b1220'; }
+})();
+</script>
+</body>
+</html>
