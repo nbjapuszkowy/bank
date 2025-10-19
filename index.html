@@ -48,7 +48,7 @@
       <p class="muted">Podaj swój login i hasło.</p>
       <div style="margin-top:12px">
         <label>Login</label>
-        <input id="loginUsername" placeholder="np. jabuszkowypl" />
+        <input id="loginUsername" placeholder="Login" />
       </div>
       <div style="margin-top:12px">
         <label>Hasło</label>
@@ -56,14 +56,13 @@
       </div>
       <div style="margin-top:12px;display:flex;gap:8px">
         <button class="btn" id="loginBtn">Zaloguj</button>
-        <button id="fillBtn">Wypełnij próbkę</button>
       </div>
-      <p class="notice">Jeżeli nie jesteś klientem banku w*********j</p>
+      <p class="notice hidden" id="simNotice">(Uwaga: strona działa lokalnie i nie łączy się z prawdziwymi systemami płatności.)</p>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (po zalogowaniu) - sekcje jako osobne zakladki -->
     <div id="dashboard" class="hidden">
-      <div class="card">
+      <div id="tab-panel" class="card tab-section">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
             <div class="small muted">Zalogowany jako</div>
@@ -80,126 +79,81 @@
         </div>
       </div>
 
-      <div class="grid">
-        <div class="center">
-
-          <!-- Kot Pik (Generator) -->
-          <div class="card">
-            <h3>Kot Pik — generator (BLIK / 6 liczb)</h3>
-            <p class="muted">Generuj szybko kot PIK</p>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="btn" id="genBlikBtn">Generuj kod BLIK (6 cyfr)</button>
-            </div>
-            <div id="kotResult" style="margin-top:12px;font-size:20px;font-weight:700"></div>
-            <div style="margin-top:8px">
-              <button id="copyBtn">Kopiuj</button>
-            </div>
-          </div>
-
-          <!-- Przelewy -->
-          <div class="card">
-            <h3>Przelew na inny numer konta</h3>
-            <label>Numer konta odbiorcy</label>
-            <input id="toAccount" placeholder="np. 1234-5678-90" />
-            <label style="margin-top:8px">Kwota (JPC)</label>
-            <input id="transferAmount" type="number" min="0" step="0.01" placeholder="np. 10.00" />
-            <label style="margin-top:8px">Tytuł</label>
-            <input id="transferTitle" placeholder="np. Prezent" />
-            <div style="margin-top:10px;display:flex;gap:8px">
-              <button class="btn" id="sendTransferBtn">Wyślij przelew</button>
-              <button id="generateQRBtn">Wygeneruj link płatności</button>
-            </div>
-            <div id="transferMsg" class="muted small" style="margin-top:8px"></div>
-          </div>
-
-          <!-- Doładowanie Miaufon -->
-          <div class="card">
-            <h3>Doładowanie Miaufon</h3>
-            <label>Numer telefonu</label>
-            <input id="phoneNumber" placeholder="np. 600-700-800" />
-            <label style="margin-top:8px">Operator</label>
-            <select id="phoneOperator">
-              <option>Miaufon Standard</option>
-              <option>Japush Mobile</option>
-              <option>FrytNet</option>
-            </select>
-            <label style="margin-top:8px">Kwota (JPC)</label>
-            <input id="phoneAmount" type="number" min="1" step="1" value="20" />
-            <div style="margin-top:10px;display:flex;gap:8px">
-              <button class="btn" id="topupBtn">Doładuj</button>
-              <button id="fakeReceiptBtn">Wydrukuj potwierdzenie</button>
-            </div>
-            <div id="topupMsg" class="muted small" style="margin-top:8px"></div>
-          </div>
-
-          <!-- Inne funkcje bankowe -->
-          <div class="card">
-            <h3>Funkcje bankowe</h3>
-            <div class="item">
-              <div>
-                <div style="font-weight:700">Historia transakcji</div>
-                <div class="small muted">Przeglądaj i eksportuj</div>
-              </div>
-              <div><button id="exportCsvBtn">Eksportuj CSV</button></div>
-            </div>
-            <div class="item">
-              <div>
-                <div style="font-weight:700">Karta wirtualna</div>
-                <div class="small muted">Wygeneruj jednorazowe dane karty</div>
-              </div>
-              <div><button id="genCardBtn">Wygeneruj</button></div>
-            </div>
-            <div class="item">
-              <div>
-                <div style="font-weight:700">Kalkulator kredytowy</div>
-                <div class="small muted">Szybki podgląd rat</div>
-              </div>
-              <div><button id="loanCalcBtn">Otwórz</button></div>
-            </div>
-          </div>
-
-          <!-- Transakcje -->
-          <div class="card">
-            <h3>Ostatnie transakcje</h3>
-            <div id="txList">
-              <!-- txs -->
-            </div>
-          </div>
-
+      <!-- Sekcja: Przelewy -->
+      <div id="tab-transfers" class="card tab-section hidden">
+        <h3>Przelew na inny numer konta</h3>
+        <label>Numer konta odbiorcy</label>
+        <input id="toAccount" placeholder="np. 1234-5678-90" />
+        <label style="margin-top:8px">Kwota (JPC)</label>
+        <input id="transferAmount" type="number" min="0" step="0.01" placeholder="np. 10.00" />
+        <label style="margin-top:8px">Tytuł</label>
+        <input id="transferTitle" placeholder="np. Prezent" />
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn" id="sendTransferBtn">Wyślij przelew</button>
+          <button id="generateQRBtn">Wygeneruj link płatności</button>
         </div>
+        <div id="transferMsg" class="muted small" style="margin-top:8px"></div>
+      </div>
 
-        <aside class="side">
-          <div class="card">
-            <h3>Twoje Japuszki</h3>
-            <div id="collectibles">
-              <!-- items -->
-            </div>
-          </div>
+      <!-- Sekcja: Doładowanie -->
+      <div id="tab-topup" class="card tab-section hidden">
+        <h3>Doładowanie Miaufon</h3>
+        <label>Numer telefonu</label>
+        <input id="phoneNumber" placeholder="np. 600-700-800" />
+        <label style="margin-top:8px">Operator</label>
+        <select id="phoneOperator">
+          <option>Miaufon Standard</option>
+          <option>Japush Mobile</option>
+          <option>FrytNet</option>
+        </select>
+        <label style="margin-top:8px">Kwota (JPC)</label>
+        <input id="phoneAmount" type="number" min="1" step="1" value="20" />
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn" id="topupBtn">Doładuj</button>
+          <button id="fakeReceiptBtn">Wydrukuj potwierdzenie</button>
+        </div>
+        <div id="topupMsg" class="muted small" style="margin-top:8px"></div>
+      </div>
 
-          <div class="card">
-            <h3>Ustawienia konta</h3>
-            <label>Hasło — zmień</label>
-            <input id="newPassword" type="password" placeholder="Nowe hasło" />
-            <div style="margin-top:8px;display:flex;gap:8px">
-              <button id="changePassBtn">Zmień hasło</button>
-            </div>
-            <div style="margin-top:12px">
-              <label class="small muted">Pobierz wyciąg</label>
-              <button id="downloadStatementBtn">Pobierz PDF (symulacja)</button>
-            </div>
-          </div>
+      <!-- Sekcja: Historia -->
+      <div id="tab-history" class="card tab-section hidden">
+        <h3>Historia transakcji</h3>
+        <div style="margin-bottom:8px;display:flex;gap:8px">
+          <button id="filterAll">Wszystkie</button><button id="filterTransfers">Przelewy</button><button id="filterTopups">Doładowania</button><button id="clearHistory">Usuń historię</button>
+        </div>
+        <div id="txList"></div>
+      </div>
 
-          <div class="card">
-            <h3>Informacje</h3>
-            <div class="small muted">Kontakt: pomoc@nbjapuszkowy.local</div>
-            <div class="small muted">Telefon: 22 777 77 77</div>
-            <div style="margin-top:8px"><span class="chip">Bezpieczne logowanie</span></div>
-          </div>
-        </aside>
+      <!-- Sekcja: Japuszki -->
+      <div id="tab-collectibles" class="card tab-section hidden">
+        <h3>Twoje Japuszki</h3>
+        <div id="collectibles"></div>
+      </div>
+
+      <!-- Sekcja: Ustawienia -->
+      <div id="tab-settings" class="card tab-section hidden">
+        <h3>Ustawienia konta</h3>
+        <label>Hasło — zmień</label>
+        <input id="newPassword" type="password" placeholder="Nowe hasło" />
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="changePassBtn">Zmień hasło</button>
+        </div>
+        <div style="margin-top:12px">
+          <label class="small muted">Pobierz wyciąg</label>
+          <button id="downloadStatementBtn">Pobierz CSV</button>
+        </div>
+      </div>
+
+      <!-- Sekcja: Pomoc -->
+      <div id="tab-support" class="card tab-section hidden">
+        <h3>Pomoc</h3>
+        <div class="small muted">Kontakt: pomoc@nbjapuszkowy.local</div>
+        <div class="small muted">Telefon: 22 777 77 77</div>
       </div>
 
       <footer>
         &copy; Narodowy Bank Japuszkowy — miły bank dla kotów i ludzi
+        <div class="small muted" style="margin-top:6px">(Demo: dane przechowywane lokalnie)</div>
       </footer>
     </div>
 
